@@ -1,5 +1,9 @@
-package kyrylo.delivery.com.deliveryusersmicroservice.User;
+package kyrylo.delivery.com.deliveryusersmicroservice.Contollers;
 
+import kyrylo.delivery.com.deliveryusersmicroservice.DTO.UserLoginDTO;
+import kyrylo.delivery.com.deliveryusersmicroservice.DTO.UserRegistrationDTO;
+import kyrylo.delivery.com.deliveryusersmicroservice.Entities.User;
+import kyrylo.delivery.com.deliveryusersmicroservice.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,11 +35,12 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        return new ResponseEntity<>(
-                userService.createUser(user),
-                HttpStatus.CREATED
-        );
+    public ResponseEntity<?> registerUser(@RequestBody UserRegistrationDTO userRegistrationDTO) {
+        User user = userService.registerUser(userRegistrationDTO);
+        if(user == null) {
+            return new ResponseEntity<>("Registration failed", HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     @PutMapping("/{userId}")
@@ -51,4 +56,10 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody UserLoginDTO loginDTO) {
+        return userService.loginUser(loginDTO)
+                .map(user -> ResponseEntity.ok().body("Login successful"))
+                .orElse(new ResponseEntity<>("Username or password is incorrect", HttpStatus.UNAUTHORIZED));
+    }
 }
