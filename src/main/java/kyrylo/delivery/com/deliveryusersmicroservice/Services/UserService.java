@@ -1,7 +1,7 @@
 package kyrylo.delivery.com.deliveryusersmicroservice.Services;
 
+import kyrylo.delivery.com.deliveryusersmicroservice.DTO.UserDTO;
 import kyrylo.delivery.com.deliveryusersmicroservice.DTO.UserLoginDTO;
-import kyrylo.delivery.com.deliveryusersmicroservice.DTO.UserRegistrationDTO;
 import kyrylo.delivery.com.deliveryusersmicroservice.Entities.User;
 import kyrylo.delivery.com.deliveryusersmicroservice.Repositories.RoleRepository;
 import kyrylo.delivery.com.deliveryusersmicroservice.Repositories.UserRepository;
@@ -34,14 +34,21 @@ public class UserService {
         return userRepository.findById(userId);
     }
 
-    public Optional<User> updateUser(Long userId, User updatedUser) {
-        return userRepository.findById(userId).map(user -> {
-            user.setUsername(updatedUser.getUsername());
-            user.setPassword(updatedUser.getPassword());
-            user.setEmail(updatedUser.getEmail());
-            user.setRole(updatedUser.getRole());
-            return userRepository.save(user);
-        });
+    public User updateUser(Long userId, UserDTO updatedUser) {
+        if(!userRepository.existsById(userId)) return null;
+
+        User existingUser = userRepository.findById(userId).get();
+
+        existingUser.setUsername(updatedUser.getUsername());
+        existingUser.setPassword(updatedUser.getPassword());
+        existingUser.setEmail(updatedUser.getEmail());
+
+        Role role = roleRepository.findByName(updatedUser.getRoleName())
+                .orElseThrow(() -> new RuntimeException("Role not found."));
+
+        existingUser.setRole(role);
+
+        return userRepository.save(existingUser);
     }
 
     public boolean deleteUser(Long userId) {
@@ -52,7 +59,7 @@ public class UserService {
         return true;
     }
 
-    public User registerUser(UserRegistrationDTO registrationDTO) {
+    public User registerUser(UserDTO registrationDTO) {
         if(userRepository.existsByUsername(registrationDTO.getUsername()) && userRepository.existsByEmail(registrationDTO.getEmail())) {
             return null;
         }

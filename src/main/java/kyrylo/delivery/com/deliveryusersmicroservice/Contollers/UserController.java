@@ -1,7 +1,7 @@
 package kyrylo.delivery.com.deliveryusersmicroservice.Contollers;
 
+import kyrylo.delivery.com.deliveryusersmicroservice.DTO.UserDTO;
 import kyrylo.delivery.com.deliveryusersmicroservice.DTO.UserLoginDTO;
-import kyrylo.delivery.com.deliveryusersmicroservice.DTO.UserRegistrationDTO;
 import kyrylo.delivery.com.deliveryusersmicroservice.Entities.User;
 import kyrylo.delivery.com.deliveryusersmicroservice.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +35,8 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody UserRegistrationDTO userRegistrationDTO) {
-        User user = userService.registerUser(userRegistrationDTO);
+    public ResponseEntity<?> registerUser(@RequestBody UserDTO userDTO) {
+        User user = userService.registerUser(userDTO);
         if(user == null) {
             return new ResponseEntity<>("Registration failed", HttpStatus.BAD_REQUEST);
         }
@@ -44,10 +44,13 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<User> updateUser(@PathVariable Long userId, @RequestBody User user) {
-        return userService.updateUser(userId, user)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> updateUser(@PathVariable Long userId, @RequestBody UserDTO userDTO) {
+        User user = userService.updateUser(userId, userDTO);
+        if(user == null)
+            return new ResponseEntity<>("User wasn't found", HttpStatus.NOT_FOUND);
+
+        return ResponseEntity.ok(user);
+
     }
 
     @DeleteMapping("/{userId}")
