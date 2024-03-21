@@ -33,3 +33,7 @@ To launch the User Microservice, follow these steps:
 
 ```bash
 mvn spring-boot:run
+```
+
+## Contributing
+Contributions are welcome to enhance the features, fix bugs, or improve the documentation of the Delivery API Gateway. Please refer to the contributing guidelines in the project's GitHub repository.
