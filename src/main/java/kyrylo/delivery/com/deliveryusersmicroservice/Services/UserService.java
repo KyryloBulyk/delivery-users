@@ -44,8 +44,12 @@ public class UserService {
         });
     }
 
-    public void deleteUser(Long userId) {
+    public boolean deleteUser(Long userId) {
+        if(!userRepository.existsById(userId)) return false;
+
         userRepository.deleteById(userId);
+
+        return true;
     }
 
     public User registerUser(UserRegistrationDTO registrationDTO) {

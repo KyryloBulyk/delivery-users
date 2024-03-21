@@ -51,9 +51,12 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
-        userService.deleteUser(userId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> deleteUser(@PathVariable Long userId) {
+        if(!userService.deleteUser(userId)) {
+            return new ResponseEntity<>("User wasn't found", HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>("User was deleted", HttpStatus.OK);
     }
 
     @PostMapping("/login")
