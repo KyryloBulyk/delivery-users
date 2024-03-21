@@ -49,9 +49,10 @@ public class UserService {
     }
 
     public User registerUser(UserRegistrationDTO registrationDTO) {
-        if(userRepository.findByUsername(registrationDTO.getUsername()).isPresent()) {
+        if(userRepository.existsByUsername(registrationDTO.getUsername()) && userRepository.existsByEmail(registrationDTO.getEmail())) {
             return null;
         }
+
         User user = new User();
         user.setUsername(registrationDTO.getUsername());
         user.setPassword(registrationDTO.getPassword());
