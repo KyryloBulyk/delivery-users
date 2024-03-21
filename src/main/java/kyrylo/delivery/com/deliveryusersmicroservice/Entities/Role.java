@@ -1,4 +1,4 @@
-package kyrylo.delivery.com.deliveryusersmicroservice.Role;
+package kyrylo.delivery.com.deliveryusersmicroservice.Entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

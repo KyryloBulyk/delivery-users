@@ -5,7 +5,7 @@ import kyrylo.delivery.com.deliveryusersmicroservice.DTO.UserRegistrationDTO;
 import kyrylo.delivery.com.deliveryusersmicroservice.Entities.User;
 import kyrylo.delivery.com.deliveryusersmicroservice.Repositories.RoleRepository;
 import kyrylo.delivery.com.deliveryusersmicroservice.Repositories.UserRepository;
-import kyrylo.delivery.com.deliveryusersmicroservice.Role.Role;
+import kyrylo.delivery.com.deliveryusersmicroservice.Entities.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
