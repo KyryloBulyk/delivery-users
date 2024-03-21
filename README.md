@@ -6,11 +6,11 @@ The User Microservice is a fundamental part of the **Delivery** application, des
 ## Architecture Interaction
 As a pivotal element of the Delivery application's microservice architecture, the User Microservice interacts with several other components to ensure a unified and efficient user experience. These interactions include:
 
-- **Delivery Api Gateway**: Serves as the primary entry point for user authentication and session management. It routes user authentication requests to the User Microservice and handles session tokens. [GitHub Repository](https://github.com/KyryloBulyk/delivery-api-gateway).
+- [Delivery Api Gateway](https://github.com/KyryloBulyk/delivery-api-gateway): Serves as the primary entry point for user authentication and session management. It routes user authentication requests to the User Microservice and handles session tokens.
 
-- **Delivery Configuration**: This service is responsible for centralizing and managing configurations across all microservices, including user-related settings and preferences. [GitHub repository](https://github.com/KyryloBulyk/delivery-configuration).
+- [Delivery Configuration](https://github.com/KyryloBulyk/delivery-configuration): This service is responsible for centralizing and managing configurations across all microservices, including user-related settings and preferences.
 
-- **Delivery Discovery**: Facilitates service discovery within the microservices architecture, allowing the User Microservice to communicate seamlessly with other services in the ecosystem. [GitHub Repository](https://github.com/KyryloBulyk/delivery-discovery).
+- [Delivery Discovery](https://github.com/KyryloBulyk/delivery-discovery): Facilitates service discovery within the microservices architecture, allowing the User Microservice to communicate seamlessly with other services in the ecosystem.
 
 The above interactions highlight the User Microservice's crucial role within the Delivery application's ecosystem, contributing to its overall functionality and user-centric approach.
 
