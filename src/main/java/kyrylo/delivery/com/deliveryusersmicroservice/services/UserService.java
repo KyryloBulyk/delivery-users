@@ -1,11 +1,11 @@
-package kyrylo.delivery.com.deliveryusersmicroservice.Services;
+package kyrylo.delivery.com.deliveryusersmicroservice.services;
 
-import kyrylo.delivery.com.deliveryusersmicroservice.DTO.AuthRequest;
-import kyrylo.delivery.com.deliveryusersmicroservice.DTO.RegisterRequest;
-import kyrylo.delivery.com.deliveryusersmicroservice.Entities.User;
-import kyrylo.delivery.com.deliveryusersmicroservice.Repositories.RoleRepository;
-import kyrylo.delivery.com.deliveryusersmicroservice.Repositories.UserRepository;
-import kyrylo.delivery.com.deliveryusersmicroservice.Entities.Role;
+import kyrylo.delivery.com.deliveryusersmicroservice.dto.AuthRequest;
+import kyrylo.delivery.com.deliveryusersmicroservice.dto.RegisterRequest;
+import kyrylo.delivery.com.deliveryusersmicroservice.entities.User;
+import kyrylo.delivery.com.deliveryusersmicroservice.repositories.RoleRepository;
+import kyrylo.delivery.com.deliveryusersmicroservice.repositories.UserRepository;
+import kyrylo.delivery.com.deliveryusersmicroservice.entities.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

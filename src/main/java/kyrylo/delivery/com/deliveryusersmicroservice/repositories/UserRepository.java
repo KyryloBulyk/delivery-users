@@ -1,6 +1,6 @@
-package kyrylo.delivery.com.deliveryusersmicroservice.Repositories;
+package kyrylo.delivery.com.deliveryusersmicroservice.repositories;
 
-import kyrylo.delivery.com.deliveryusersmicroservice.Entities.User;
+import kyrylo.delivery.com.deliveryusersmicroservice.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,7 +1,7 @@
-package kyrylo.delivery.com.deliveryusersmicroservice.Contollers;
+package kyrylo.delivery.com.deliveryusersmicroservice.contollers;
 
-import kyrylo.delivery.com.deliveryusersmicroservice.Entities.Role;
-import kyrylo.delivery.com.deliveryusersmicroservice.Services.RoleService;
+import kyrylo.delivery.com.deliveryusersmicroservice.entities.Role;
+import kyrylo.delivery.com.deliveryusersmicroservice.services.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/roles")
+@RequestMapping("api/roles")
 public class RoleController {
 
     private RoleService roleService;

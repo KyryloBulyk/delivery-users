@@ -1,9 +1,11 @@
-package kyrylo.delivery.com.deliveryusersmicroservice.Contollers;
+package kyrylo.delivery.com.deliveryusersmicroservice.contollers;
 
-import kyrylo.delivery.com.deliveryusersmicroservice.DTO.AuthRequest;
-import kyrylo.delivery.com.deliveryusersmicroservice.DTO.RegisterRequest;
-import kyrylo.delivery.com.deliveryusersmicroservice.Entities.User;
-import kyrylo.delivery.com.deliveryusersmicroservice.Services.UserService;
+import kyrylo.delivery.com.deliveryusersmicroservice.dto.AuthRequest;
+import kyrylo.delivery.com.deliveryusersmicroservice.dto.RegisterRequest;
+import kyrylo.delivery.com.deliveryusersmicroservice.entities.User;
+import kyrylo.delivery.com.deliveryusersmicroservice.services.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/users")
+@RequestMapping("api/users")
 public class UserController {
 
     private UserService userService;
@@ -32,15 +34,6 @@ public class UserController {
         return userService.getUserById(userId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
-    }
-
-    @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest) {
-        User user = userService.registerUser(registerRequest);
-        if(user == null) {
-            return new ResponseEntity<>("Registration failed", HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     @PutMapping("/{userId}")

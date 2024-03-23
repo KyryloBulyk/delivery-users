@@ -1,7 +1,7 @@
-package kyrylo.delivery.com.deliveryusersmicroservice.Services;
+package kyrylo.delivery.com.deliveryusersmicroservice.services;
 
-import kyrylo.delivery.com.deliveryusersmicroservice.Entities.Role;
-import kyrylo.delivery.com.deliveryusersmicroservice.Repositories.RoleRepository;
+import kyrylo.delivery.com.deliveryusersmicroservice.entities.Role;
+import kyrylo.delivery.com.deliveryusersmicroservice.repositories.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
