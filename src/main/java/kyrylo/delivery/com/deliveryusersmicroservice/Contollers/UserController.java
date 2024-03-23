@@ -1,7 +1,7 @@
 package kyrylo.delivery.com.deliveryusersmicroservice.Contollers;
 
-import kyrylo.delivery.com.deliveryusersmicroservice.DTO.UserDTO;
-import kyrylo.delivery.com.deliveryusersmicroservice.DTO.UserLoginDTO;
+import kyrylo.delivery.com.deliveryusersmicroservice.DTO.AuthRequest;
+import kyrylo.delivery.com.deliveryusersmicroservice.DTO.RegisterRequest;
 import kyrylo.delivery.com.deliveryusersmicroservice.Entities.User;
 import kyrylo.delivery.com.deliveryusersmicroservice.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +35,8 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody UserDTO userDTO) {
-        User user = userService.registerUser(userDTO);
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest) {
+        User user = userService.registerUser(registerRequest);
         if(user == null) {
             return new ResponseEntity<>("Registration failed", HttpStatus.BAD_REQUEST);
         }
@@ -44,8 +44,8 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<?> updateUser(@PathVariable Long userId, @RequestBody UserDTO userDTO) {
-        User user = userService.updateUser(userId, userDTO);
+    public ResponseEntity<?> updateUser(@PathVariable Long userId, @RequestBody RegisterRequest registerRequest) {
+        User user = userService.updateUser(userId, registerRequest);
         if(user == null)
             return new ResponseEntity<>("User wasn't found", HttpStatus.NOT_FOUND);
 
@@ -62,10 +62,12 @@ public class UserController {
         return new ResponseEntity<>("User was deleted", HttpStatus.OK);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody UserLoginDTO loginDTO) {
-        return userService.loginUser(loginDTO)
+    @PostMapping("/authenticate")
+    public ResponseEntity<?> authenticateUser(@RequestBody AuthRequest authRequest) {
+        return userService.loginUser(authRequest)
                 .map(user -> ResponseEntity.ok().body("Login successful"))
                 .orElse(new ResponseEntity<>("Username or password is incorrect", HttpStatus.UNAUTHORIZED));
     }
+
+
 }
