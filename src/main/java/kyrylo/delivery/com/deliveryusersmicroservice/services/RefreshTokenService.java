@@ -42,4 +42,17 @@ public class RefreshTokenService {
             throw new RuntimeException(token.getToken() + " Refresh token was expired. Please make a new signing request");
         }
     }
+
+    public RefreshToken updateRefreshToken(RefreshToken refreshToken) {
+        refreshToken.setToken(UUID.randomUUID().toString());
+        refreshToken.setExpiryDate(Instant.now().plusMillis(1000 * 604800));
+        return refreshTokenRepository.save(refreshToken);
+    }
+
+    public void deleteByUsername(String username) {
+        refreshTokenRepository.findByUser_Username(username).ifPresent(refreshToken -> {
+            refreshTokenRepository.delete(refreshToken);
+        });
+    }
+
 }
