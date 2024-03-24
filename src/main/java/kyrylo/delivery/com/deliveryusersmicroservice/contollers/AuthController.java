@@ -82,6 +82,16 @@ public class AuthController {
         return ResponseEntity.ok(new JwtResponse(newAccessToken));
     }
 
+    @PostMapping("/validateToken")
+    public ResponseEntity<?> validateToken(@RequestBody JwtResponse token) {
+        try {
+            authService.validateToken(token.accessToken());
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+        }
+    }
+
 
 
 
