@@ -16,4 +16,8 @@ public class AuthService {
     public String generateToken(UserDetails userDetails) {
         return jwtService.generateToken(userDetails);
     }
+
+    public String extractUsername(String token) {
+        return jwtService.extractUsernameWithoutValidation(token);
+    }
 }

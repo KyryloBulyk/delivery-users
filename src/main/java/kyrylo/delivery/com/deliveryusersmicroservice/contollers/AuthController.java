@@ -2,7 +2,6 @@ package kyrylo.delivery.com.deliveryusersmicroservice.contollers;
 
 import kyrylo.delivery.com.deliveryusersmicroservice.dto.AuthRequest;
 import kyrylo.delivery.com.deliveryusersmicroservice.dto.JwtResponse;
-import kyrylo.delivery.com.deliveryusersmicroservice.dto.RefreshTokenRequest;
 import kyrylo.delivery.com.deliveryusersmicroservice.dto.RegisterRequest;
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.RefreshToken;
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.User;
@@ -53,23 +52,37 @@ public class AuthController {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequest.username());
+
+        if(refreshToken == null) {
+            throw new RuntimeException("Error in creating Refresh Token");
+        }
+
         String token = authService.generateToken(userDetails);
 
-        return ResponseEntity.ok(new JwtResponse(token, refreshToken.getToken()));
+        return ResponseEntity.ok(new JwtResponse(token));
     }
 
-    @PostMapping("/refreshToken")
-    public ResponseEntity<JwtResponse> refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
-        RefreshToken refreshToken = refreshTokenService.findByToken(refreshTokenRequest.refreshToken())
-                .orElseThrow(() -> new RuntimeException("Invalid refresh token"));
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshAccessToken(@RequestHeader("Authorization") String bearerToken) {
+        if (!bearerToken.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Incorrect Authorization header format.");
+        }
 
-        refreshTokenService.verifyExpiration(refreshToken);
+        String onlyBearerToken = bearerToken.substring(7);
+        String username = authService.extractUsername(onlyBearerToken);
 
-        UserDetails userDetails = userService.loadUserByUsername(refreshToken.getUser().getUsername());
-        String accessToken = authService.generateToken(userDetails);
+        RefreshToken existingRefreshToken = refreshTokenService.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Refresh Token not found"));
 
-        return ResponseEntity.ok(new JwtResponse(accessToken, refreshToken.getToken()));
+        refreshTokenService.verifyExpiration(existingRefreshToken);
+
+        UserDetails userDetails = userService.loadUserByUsername(username);
+        String newAccessToken = authService.generateToken(userDetails);
+
+        return ResponseEntity.ok(new JwtResponse(newAccessToken));
     }
+
+
 
 
 

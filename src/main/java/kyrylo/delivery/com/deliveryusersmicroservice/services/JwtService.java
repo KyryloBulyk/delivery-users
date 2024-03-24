@@ -16,6 +16,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import java.util.Base64;
+import java.util.StringTokenizer;
+
 @Component
 public class JwtService {
 
@@ -26,6 +29,41 @@ public class JwtService {
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
+
+    public String extractUsernameWithoutValidation(String token) {
+        if (token == null || token.isEmpty()) {
+            throw new IllegalArgumentException("Token cannot be empty or null");
+        }
+
+        StringTokenizer tokenizer = new StringTokenizer(token, ".");
+        String header = tokenizer.hasMoreTokens() ? tokenizer.nextToken() : null;
+        String payload = tokenizer.hasMoreTokens() ? tokenizer.nextToken() : null;
+
+        if (payload == null) {
+            throw new IllegalArgumentException("Invalid JWT token.");
+        }
+
+        String payloadDecoded = new String(Base64.getUrlDecoder().decode(payload));
+
+        String username = extractFieldFromPayload(payloadDecoded, "sub");
+        return username;
+    }
+
+    private String extractFieldFromPayload(String payload, String fieldName) {
+        String searchFor = "\"" + fieldName + "\":\"";
+        int startPos = payload.indexOf(searchFor);
+        if (startPos < 0) {
+            return null;
+        }
+        startPos += searchFor.length();
+        int endPos = payload.indexOf("\"", startPos);
+        if (endPos < 0) {
+            return null;
+        }
+
+        return payload.substring(startPos, endPos);
+    }
+
 
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
@@ -65,7 +103,7 @@ public class JwtService {
                 .setClaims(claims)
                 .setSubject(userName)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 50)) //1000 * 604800
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 50))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
