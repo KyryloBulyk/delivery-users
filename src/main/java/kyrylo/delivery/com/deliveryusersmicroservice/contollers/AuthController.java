@@ -5,12 +5,9 @@ import kyrylo.delivery.com.deliveryusersmicroservice.dto.JwtResponse;
 import kyrylo.delivery.com.deliveryusersmicroservice.dto.RegisterRequest;
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.RefreshToken;
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.User;
-import kyrylo.delivery.com.deliveryusersmicroservice.filter.JwtAuthFilter;
 import kyrylo.delivery.com.deliveryusersmicroservice.services.AuthService;
 import kyrylo.delivery.com.deliveryusersmicroservice.services.RefreshTokenService;
 import kyrylo.delivery.com.deliveryusersmicroservice.services.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +16,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -51,16 +50,24 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(authRequest.username(), authRequest.password()));
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequest.username());
+        // Перевіряємо, чи вже існує refreshToken для користувача
+        Optional<RefreshToken> existingRefreshToken = refreshTokenService.findByUsername(authRequest.username());
 
-        if(refreshToken == null) {
-            throw new RuntimeException("Error in creating Refresh Token");
+        RefreshToken refreshToken;
+        if (existingRefreshToken.isPresent()) {
+            refreshToken = refreshTokenService.updateRefreshToken(existingRefreshToken.get());
+        } else {
+            refreshToken = refreshTokenService.createRefreshToken(authRequest.username());
         }
 
-        String token = authService.generateToken(userDetails);
+        if(refreshToken == null) {
+            throw new RuntimeException("Error in processing Refresh Token");
+        }
 
-        return ResponseEntity.ok(new JwtResponse(token));
+        String accessToken = authService.generateToken(userDetails);
+        return ResponseEntity.ok(new JwtResponse(accessToken));
     }
+
 
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshAccessToken(@RequestHeader("Authorization") String bearerToken) {
