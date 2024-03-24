@@ -22,7 +22,6 @@ import java.util.StringTokenizer;
 @Component
 public class JwtService {
 
-
     public static final String SECRET = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
 
 
@@ -103,7 +102,7 @@ public class JwtService {
                 .setClaims(claims)
                 .setSubject(userName)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 50))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 600))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
