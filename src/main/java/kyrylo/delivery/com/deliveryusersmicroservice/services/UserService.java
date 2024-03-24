@@ -87,4 +87,7 @@ public class UserService {
         return userDetailsService.loadUserByUsername(username);
     }
 
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
 }
