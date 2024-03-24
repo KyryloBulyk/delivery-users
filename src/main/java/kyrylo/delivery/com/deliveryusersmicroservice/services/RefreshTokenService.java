@@ -22,25 +22,24 @@ public class RefreshTokenService {
         this.userRepository = userRepository;
     }
 
+    public Optional<RefreshToken> findByUsername(String username) {
+        return refreshTokenRepository.findByUser_Username(username);
+    }
+
     public RefreshToken createRefreshToken(String username) {
         RefreshToken refreshToken = RefreshToken.builder()
                 .user(userRepository.findByUsername(username).get())
                 .token(UUID.randomUUID().toString())
-                .expiryDate(Instant.now().plusMillis(1000 * 50))
+                .expiryDate(Instant.now().plusMillis(1000 * 604800))
                 .build();
 
         return refreshTokenRepository.save(refreshToken);
     }
 
-    public Optional<RefreshToken> findByToken(String token) {
-        return refreshTokenRepository.findByToken(token);
-    }
-
-
     public void verifyExpiration(RefreshToken token) {
         if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
             refreshTokenRepository.delete(token);
-            throw new RuntimeException(token.getToken() + " Refresh token was expired. Please make a new signin request");
+            throw new RuntimeException(token.getToken() + " Refresh token was expired. Please make a new signing request");
         }
     }
 }

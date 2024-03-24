@@ -4,8 +4,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,8 +21,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final DeliveryUserDetailsService userDetailsService;
-    private Logger logger = LoggerFactory.getLogger(JwtAuthFilter.class);
-
     @Autowired
     public JwtAuthFilter(JwtService jwtService, DeliveryUserDetailsService userDetailsService) {
         this.jwtService = jwtService;
