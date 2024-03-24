@@ -1,6 +1,5 @@
 package kyrylo.delivery.com.deliveryusersmicroservice.services;
 
-import kyrylo.delivery.com.deliveryusersmicroservice.dto.AuthRequest;
 import kyrylo.delivery.com.deliveryusersmicroservice.dto.RegisterRequest;
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.User;
 import kyrylo.delivery.com.deliveryusersmicroservice.repositories.RoleRepository;
@@ -79,12 +78,6 @@ public class UserService {
         user.setRole(role);
 
         return userRepository.save(user);
-    }
-
-
-    public Optional<User> loginUser(AuthRequest authRequest) {
-        return userRepository.findByUsername(authRequest.username())
-                .filter(user -> passwordEncoder.matches(authRequest.password(), user.getPassword()));
     }
 
 }
