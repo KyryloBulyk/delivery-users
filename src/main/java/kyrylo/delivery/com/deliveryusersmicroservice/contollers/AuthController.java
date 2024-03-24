@@ -1,10 +1,17 @@
 package kyrylo.delivery.com.deliveryusersmicroservice.contollers;
 
 import kyrylo.delivery.com.deliveryusersmicroservice.dto.AuthRequest;
+import kyrylo.delivery.com.deliveryusersmicroservice.dto.JwtResponse;
+import kyrylo.delivery.com.deliveryusersmicroservice.dto.RefreshTokenRequest;
 import kyrylo.delivery.com.deliveryusersmicroservice.dto.RegisterRequest;
+import kyrylo.delivery.com.deliveryusersmicroservice.entities.RefreshToken;
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.User;
+import kyrylo.delivery.com.deliveryusersmicroservice.filter.JwtAuthFilter;
 import kyrylo.delivery.com.deliveryusersmicroservice.services.AuthService;
+import kyrylo.delivery.com.deliveryusersmicroservice.services.RefreshTokenService;
 import kyrylo.delivery.com.deliveryusersmicroservice.services.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +27,14 @@ public class AuthController {
     private AuthService authService;
     private UserService userService;
     private AuthenticationManager authenticationManager;
+    private RefreshTokenService refreshTokenService;
 
     @Autowired
-    public AuthController(AuthService authService, AuthenticationManager authenticationManager, UserService userService) {
+    public AuthController(AuthService authService, AuthenticationManager authenticationManager, UserService userService, RefreshTokenService refreshTokenService) {
         this.authService = authService;
         this.authenticationManager = authenticationManager;
         this.userService = userService;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @PostMapping("/register")
@@ -38,12 +47,31 @@ public class AuthController {
     }
 
     @PostMapping("/token")
-    public ResponseEntity<String> getToken(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<JwtResponse> getToken(@RequestBody AuthRequest authRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequest.username(), authRequest.password()));
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequest.username());
         String token = authService.generateToken(userDetails);
-        return ResponseEntity.ok(token);
+
+        return ResponseEntity.ok(new JwtResponse(token, refreshToken.getToken()));
     }
+
+    @PostMapping("/refreshToken")
+    public ResponseEntity<JwtResponse> refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+        RefreshToken refreshToken = refreshTokenService.findByToken(refreshTokenRequest.refreshToken())
+                .orElseThrow(() -> new RuntimeException("Invalid refresh token"));
+
+        refreshTokenService.verifyExpiration(refreshToken);
+
+        UserDetails userDetails = userService.loadUserByUsername(refreshToken.getUser().getUsername());
+        String accessToken = authService.generateToken(userDetails);
+
+        return ResponseEntity.ok(new JwtResponse(accessToken, refreshToken.getToken()));
+    }
+
+
+
 }
 
