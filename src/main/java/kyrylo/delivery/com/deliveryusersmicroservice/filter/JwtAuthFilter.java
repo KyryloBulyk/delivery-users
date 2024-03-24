@@ -13,7 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import kyrylo.delivery.com.deliveryusersmicroservice.services.JwtService;
-import kyrylo.delivery.com.deliveryusersmicroservice.configuration.DeliveryUserDetailsService;
+import kyrylo.delivery.com.deliveryusersmicroservice.userDetails.DeliveryUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.IOException;

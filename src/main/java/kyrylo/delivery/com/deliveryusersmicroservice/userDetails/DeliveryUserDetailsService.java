@@ -1,4 +1,4 @@
-package kyrylo.delivery.com.deliveryusersmicroservice.configuration;
+package kyrylo.delivery.com.deliveryusersmicroservice.userDetails;
 
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.User;
 import kyrylo.delivery.com.deliveryusersmicroservice.repositories.UserRepository;
