@@ -1,6 +1,5 @@
 package kyrylo.delivery.com.deliveryusersmicroservice.configuration;
 
-import jakarta.ws.rs.HttpMethod;
 import kyrylo.delivery.com.deliveryusersmicroservice.filter.JwtAuthFilter;
 import kyrylo.delivery.com.deliveryusersmicroservice.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +39,9 @@ public class SecurityConfiguration {
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/users").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/users").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/roles/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated())
 //                        .anyRequest().permitAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

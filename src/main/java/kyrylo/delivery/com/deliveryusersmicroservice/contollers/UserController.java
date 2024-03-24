@@ -1,6 +1,5 @@
 package kyrylo.delivery.com.deliveryusersmicroservice.contollers;
 
-import kyrylo.delivery.com.deliveryusersmicroservice.dto.AuthRequest;
 import kyrylo.delivery.com.deliveryusersmicroservice.dto.RegisterRequest;
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.User;
 import kyrylo.delivery.com.deliveryusersmicroservice.filter.JwtAuthFilter;
@@ -57,13 +56,6 @@ public class UserController {
         }
 
         return new ResponseEntity<>("User was deleted", HttpStatus.OK);
-    }
-
-    @PostMapping("/authenticate")
-    public ResponseEntity<?> authenticateUser(@RequestBody AuthRequest authRequest) {
-        return userService.loginUser(authRequest)
-                .map(user -> ResponseEntity.ok().body("Login successful"))
-                .orElse(new ResponseEntity<>("Username or password is incorrect", HttpStatus.UNAUTHORIZED));
     }
 
 
