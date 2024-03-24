@@ -2,6 +2,7 @@ package kyrylo.delivery.com.deliveryusersmicroservice.services;
 
 import kyrylo.delivery.com.deliveryusersmicroservice.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,13 +15,7 @@ public class AuthService {
         this.jwtService = jwtService;
     }
 
-    public String generateToken(String username) {
-        return jwtService.generateToken(username);
+    public String generateToken(UserDetails userDetails) {
+        return jwtService.generateToken(userDetails);
     }
-
-    public void validateToken(String token) {
-        jwtService.validateToken(token);
-    }
-
-
 }

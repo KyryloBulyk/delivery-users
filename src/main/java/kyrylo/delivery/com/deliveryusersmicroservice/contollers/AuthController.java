@@ -11,20 +11,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-    private AuthService service;
+    private AuthService authService;
     private UserService userService;
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    public AuthController(AuthService service, UserService userService, AuthenticationManager authenticationManager) {
-        this.service = service;
-        this.userService = userService;
+    public AuthController(AuthService authService, AuthenticationManager authenticationManager, UserService userService) {
+        this.authService = authService;
         this.authenticationManager = authenticationManager;
+        this.userService = userService;
     }
 
     @PostMapping("/register")
@@ -37,18 +38,12 @@ public class AuthController {
     }
 
     @PostMapping("/token")
-    public String getToken(@RequestBody AuthRequest authRequest) {
-        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.username(), authRequest.password()));
-        if (authenticate.isAuthenticated()) {
-            return service.generateToken(authRequest.username());
-        } else {
-            throw new RuntimeException("invalid access");
-        }
-    }
-
-    @GetMapping("/validate")
-    public String validateToken(@RequestParam("token") String token) {
-        service.validateToken(token);
-        return "Token is valid";
+    public ResponseEntity<String> getToken(@RequestBody AuthRequest authRequest) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(authRequest.username(), authRequest.password()));
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String token = authService.generateToken(userDetails);
+        return ResponseEntity.ok(token);
     }
 }
+

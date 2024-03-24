@@ -3,6 +3,7 @@ package kyrylo.delivery.com.deliveryusersmicroservice.contollers;
 import kyrylo.delivery.com.deliveryusersmicroservice.dto.AuthRequest;
 import kyrylo.delivery.com.deliveryusersmicroservice.dto.RegisterRequest;
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.User;
+import kyrylo.delivery.com.deliveryusersmicroservice.filter.JwtAuthFilter;
 import kyrylo.delivery.com.deliveryusersmicroservice.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,10 +15,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/users")
+@RequestMapping("/api/users")
 public class UserController {
 
     private UserService userService;
+    private Logger logger =  LoggerFactory.getLogger(JwtAuthFilter.class);
 
     @Autowired
     public UserController(UserService userService) {
@@ -26,6 +28,8 @@ public class UserController {
 
     @GetMapping()
     public ResponseEntity<List<User>> getAllUsers() {
+
+        logger.info("In User Controller");
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
