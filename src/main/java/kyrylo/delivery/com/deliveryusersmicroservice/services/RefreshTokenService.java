@@ -49,4 +49,10 @@ public class RefreshTokenService {
         return refreshTokenRepository.save(refreshToken);
     }
 
+    public void deleteByUsername(String username) {
+        refreshTokenRepository.findByUser_Username(username).ifPresent(refreshToken -> {
+            refreshTokenRepository.delete(refreshToken);
+        });
+    }
+
 }

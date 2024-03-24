@@ -50,7 +50,6 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(authRequest.username(), authRequest.password()));
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        // Перевіряємо, чи вже існує refreshToken для користувача
         Optional<RefreshToken> existingRefreshToken = refreshTokenService.findByUsername(authRequest.username());
 
         RefreshToken refreshToken;
@@ -99,9 +98,18 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String bearerToken) {
+        if (!bearerToken.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Incorrect Authorization header format.");
+        }
 
+        String accessToken = bearerToken.substring(7);
+        String username = authService.extractUsername(accessToken);
 
+        refreshTokenService.deleteByUsername(username);
 
-
+        return ResponseEntity.ok("Logged out successfully.");
+    }
 }
 
