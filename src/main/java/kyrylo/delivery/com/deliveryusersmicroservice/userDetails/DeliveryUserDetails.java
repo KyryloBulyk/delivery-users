@@ -1,4 +1,4 @@
-package kyrylo.delivery.com.deliveryusersmicroservice.configuration;
+package kyrylo.delivery.com.deliveryusersmicroservice.userDetails;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

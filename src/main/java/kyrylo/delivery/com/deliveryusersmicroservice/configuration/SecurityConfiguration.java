@@ -2,6 +2,7 @@ package kyrylo.delivery.com.deliveryusersmicroservice.configuration;
 
 import kyrylo.delivery.com.deliveryusersmicroservice.filter.JwtAuthFilter;
 import kyrylo.delivery.com.deliveryusersmicroservice.repositories.UserRepository;
+import kyrylo.delivery.com.deliveryusersmicroservice.userDetails.DeliveryUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,7 +40,20 @@ public class SecurityConfiguration {
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/v2/api-docs",
+                                "/v3/api-docs",
+                                "/v3/api-docs/**",
+                                "/swagger-resources",
+                                "/swagger-resources/**",
+                                "/configuration/vi",
+                                "/configuration/security",
+                                "/swagger-ui/**",
+                                "/webjars/**",
+                                "/swagger-ui.html"
+                        )
+                        .permitAll()
                         .requestMatchers("/api/users").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/roles/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated())
