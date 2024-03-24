@@ -37,6 +37,16 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/email/{email}")
+    public ResponseEntity<String> existsByEmail(@PathVariable String email) {
+        boolean userIsExists = userService.existsByEmail(email);
+
+        if(userIsExists)
+            return new ResponseEntity<>("Email is found", HttpStatus.OK);
+
+        return new ResponseEntity<>("User don't found", HttpStatus.BAD_REQUEST);
+    }
+
     @PutMapping("/{userId}")
     public ResponseEntity<?> updateUser(@PathVariable Long userId, @RequestBody RegisterRequest registerRequest) {
         User user = userService.updateUser(userId, registerRequest);
