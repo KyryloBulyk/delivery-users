@@ -18,7 +18,6 @@ import java.util.List;
 public class UserController {
 
     private UserService userService;
-    private Logger logger =  LoggerFactory.getLogger(JwtAuthFilter.class);
 
     @Autowired
     public UserController(UserService userService) {
@@ -28,7 +27,6 @@ public class UserController {
     @GetMapping()
     public ResponseEntity<List<User>> getAllUsers() {
 
-        logger.info("In User Controller");
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
