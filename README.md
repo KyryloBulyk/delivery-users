@@ -1,39 +1,43 @@
-# User Microservice
+# 🚹 Delivery Users Microservice
 
-## Overview
-The User Microservice is a fundamental part of the **Delivery** application, designed to enhance and streamline operations within a comprehensive delivery system. This microservice is tasked with managing all user-related operations such as registration, authentication, profile management, and account deletion.
+## 📌 Overview
 
-## Architecture Interaction
-As a pivotal element of the Delivery application's microservice architecture, the User Microservice interacts with several other components to ensure a unified and efficient user experience. These interactions include:
+The Delivery Users Microservice 🧑‍💼 is an integral component of the **Delivery** microservices architecture, dedicated to handling all aspects of user management. This includes user registration 📝, authentication 🔐, profile management 🔄, and account deletions 🗑️. It serves as the backbone for managing user data and ensuring secure access across the Delivery application.
 
-- [Delivery Api Gateway](https://github.com/KyryloBulyk/delivery-api-gateway): Serves as the primary entry point for user authentication and session management. It routes user authentication requests to the User Microservice and handles session tokens.
+## 🌐 Architecture Interaction
 
-- [Delivery Configuration](https://github.com/KyryloBulyk/delivery-configuration): This service is responsible for centralizing and managing configurations across all microservices, including user-related settings and preferences.
+As a core element of the Delivery microservices architecture, the Users Microservice interacts closely with several other services to provide a comprehensive and seamless user experience:
 
-- [Delivery Discovery](https://github.com/KyryloBulyk/delivery-discovery): Facilitates service discovery within the microservices architecture, allowing the User Microservice to communicate seamlessly with other services in the ecosystem.
+- [Delivery API Gateway](https://github.com/KyryloBulyk/delivery-api-gateway) 🚪: Acts as the entry point for routing user-related requests to this microservice, handling user authentication and authorization via JWT tokens.
 
-The above interactions highlight the User Microservice's crucial role within the Delivery application's ecosystem, contributing to its overall functionality and user-centric approach.
+- [Delivery Configuration](https://github.com/KyryloBulyk/delivery-configuration) ⚙️: Provides centralized configuration management, enabling the Users Microservice to adapt dynamically to configuration changes.
 
-## Getting Started
+- [Delivery Discovery](https://github.com/KyryloBulyk/delivery-discovery) 🔍: Enables efficient service discovery, allowing the Users Microservice to communicate and interact with other microservices within the ecosystem.
 
-### Prerequisites
-Ensure you have the following prerequisites installed and configured on your system before proceeding:
-- Java 11 or later.
-- Maven (for managing project dependencies and executions).
-- Access to a PostgreSQL database for data persistence.
+This collaborative environment ensures that user-related functionalities are handled efficiently, contributing to the robustness of the Delivery application.
 
-### Configuration
-Configure your environment by setting up the `application.properties` file with the necessary database connection details and any other environment-specific configurations.
+## 🚀 Features
 
-### Running the Application
-To launch the User Microservice, follow these steps:
+- **User Management**: Comprehensive handling of user data, including registration, authentication, and profile updates.
+- **Security**: Utilizes Spring Security and JWT for robust authentication and authorization mechanisms.
+- **Unit Testing**: Includes a suite of unit tests to ensure the reliability and functionality of the service.
+- **Continuous Integration**: Integrated with GitHub Actions for continuous testing and deployment workflows.
+- **Swagger Documentation**: Offers detailed API documentation accessible via [Swagger UI](http://localhost:8080/swagger-ui/), providing insights into the available endpoints and their usage.
 
-1. Open your terminal and navigate to the root directory of the project.
-2. Execute the Maven command below to compile the project, apply any necessary database migrations, and start the Spring Boot application:
+## 📦 Running via Docker Compose
 
-```bash
-mvn spring-boot:run
-```
+The Users Microservice can be launched as part of the Delivery application using Docker Compose, orchestrated through the Delivery API Gateway. This setup simplifies the deployment process and ensures seamless interaction between services.
 
-## Contributing
-Contributions are welcome to enhance the features, fix bugs, or improve the documentation of the Delivery API Gateway. Please refer to the contributing guidelines in the project's GitHub repository.
+1. Ensure Docker 🐳 and Docker Compose are installed on your machine.
+2. Clone the Delivery API Gateway application repository containing the `docker-compose.yml` file.
+3. Run the following command in the root directory of the cloned repository:
+
+   ```bash
+   docker-compose up
+    ```
+
+This will start all the microservices, including the Users Microservice, as defined in the Docker Compose configuration.
+
+## 🤝 Contributing
+
+Contributions to improve the Users Microservice or the Delivery application as a whole are highly appreciated. Whether it's enhancing features, fixing bugs, or improving documentation, your contributions are welcome. Please check the project's GitHub repository for contribution guidelines.
