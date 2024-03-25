@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: delivery-users-microservice
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: delivery-users-microservice
+  template:
+    metadata:
+      labels:
+        app: delivery-users-microservice
+    spec:
+      containers:
+        - name: delivery-users-microservice
+          image: kyrylobulyk/delivery-users-microservice:0.0.11
+          ports:
+            - containerPort: 8080
