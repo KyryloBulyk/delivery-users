@@ -46,7 +46,7 @@ public class UserService {
         User existingUser = userRepository.findById(userId).get();
 
         existingUser.setUsername(updatedUser.username());
-        existingUser.setPassword(updatedUser.password());
+        existingUser.setPassword(passwordEncoder.encode(updatedUser.password()));
         existingUser.setEmail(updatedUser.email());
 
         Role role = roleRepository.findByName(updatedUser.roleName())
