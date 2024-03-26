@@ -20,7 +20,6 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
-@SpringBootTest
 public class RefreshTokenServiceTest {
 
     @Mock
@@ -97,6 +96,38 @@ public class RefreshTokenServiceTest {
     }
 
 
+    @Test
+    public void testCreateRefreshToken_CreateNewToken() {
+        User user = new User();
+        user.setUsername("Example User");
+        when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+
+        RefreshToken createdRefreshToken = new RefreshToken();
+        createdRefreshToken.setToken("CreateToken");
+
+        when(refreshTokenRepository.save(any(RefreshToken.class))).thenReturn(createdRefreshToken);
+
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getUsername());
+
+        verify(refreshTokenRepository).save(any(RefreshToken.class));
+        assertEquals("CreateToken", refreshToken.getToken());
+    }
+
+    @Test
+    public void testUpdateRefreshToken_UpdatingOldRefreshToken() {
+        RefreshToken oldRefreshToken = new RefreshToken();
+        oldRefreshToken.setToken("refreshToken");
+
+        RefreshToken newRefreshToken = new RefreshToken();
+        newRefreshToken.setToken("newRefreshToken");
+
+        when(refreshTokenRepository.save(any(RefreshToken.class))).thenReturn(newRefreshToken);
+
+        RefreshToken refreshToken = refreshTokenService.updateRefreshToken(oldRefreshToken);
+
+        assertEquals("newRefreshToken", refreshToken.getToken());
+        verify(refreshTokenRepository).save(any(RefreshToken.class));
+    }
 
 
 
