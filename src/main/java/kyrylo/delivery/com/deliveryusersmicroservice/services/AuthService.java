@@ -5,6 +5,7 @@ import kyrylo.delivery.com.deliveryusersmicroservice.dto.RegisterRequest;
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.RefreshToken;
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.Role;
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.User;
+import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.authExceptions.InvalidTokenException;
 import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.authExceptions.RegistrationException;
 import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.roleExceptions.RoleNotFoundException;
 import kyrylo.delivery.com.deliveryusersmicroservice.repositories.RoleRepository;
@@ -47,9 +48,11 @@ public class AuthService {
         return jwtService.extractUsernameWithoutValidation(token);
     }
 
-    public void validateToken(String token) throws Exception {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(jwtService.extractUsername(token));
-        jwtService.validateToken(token, userDetails);
+    public void validateToken(String token) throws InvalidTokenException {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(this.extractUsername(token));
+        if (!jwtService.validateToken(token, userDetails)) {
+            throw new InvalidTokenException("Invalid token");
+        }
     }
 
     public User registerUser(RegisterRequest registerRequest) {
@@ -91,5 +94,16 @@ public class AuthService {
         String newAccessToken = generateToken(userDetails);
 
         return new JwtResponse(newAccessToken);
+    }
+
+    public void logout(String bearerToken) {
+        if (!bearerToken.startsWith("Bearer ")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect Authorization header format.");
+        }
+
+        String refreshTokenValue = bearerToken.substring(7);
+        String username = this.extractUsername(refreshTokenValue);
+
+        refreshTokenService.deleteByUsername(username);
     }
 }

@@ -5,6 +5,7 @@ import kyrylo.delivery.com.deliveryusersmicroservice.dto.JwtResponse;
 import kyrylo.delivery.com.deliveryusersmicroservice.dto.RegisterRequest;
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.RefreshToken;
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.User;
+import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.authExceptions.InvalidTokenException;
 import kyrylo.delivery.com.deliveryusersmicroservice.services.AuthService;
 import kyrylo.delivery.com.deliveryusersmicroservice.services.RefreshTokenService;
 import kyrylo.delivery.com.deliveryusersmicroservice.services.UserService;
@@ -23,9 +24,9 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-    private AuthService authService;
-    private AuthenticationManager authenticationManager;
-    private RefreshTokenService refreshTokenService;
+    private final AuthService authService;
+    private final AuthenticationManager authenticationManager;
+    private final RefreshTokenService refreshTokenService;
 
     @Autowired
     public AuthController(AuthService authService, AuthenticationManager authenticationManager, RefreshTokenService refreshTokenService) {
@@ -63,23 +64,19 @@ public class AuthController {
         try {
             authService.validateToken(token.accessToken());
             return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+        } catch (InvalidTokenException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid token");
         }
     }
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader("Authorization") String bearerToken) {
-        if (!bearerToken.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Incorrect Authorization header format.");
+        try {
+            authService.logout(bearerToken);
+            return ResponseEntity.ok("Logged out successfully.");
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
         }
-
-        String accessToken = bearerToken.substring(7);
-        String username = authService.extractUsername(accessToken);
-
-        refreshTokenService.deleteByUsername(username);
-
-        return ResponseEntity.ok("Logged out successfully.");
     }
 }
 
