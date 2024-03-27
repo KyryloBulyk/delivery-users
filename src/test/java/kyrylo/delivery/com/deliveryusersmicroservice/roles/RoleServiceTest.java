@@ -1,13 +1,12 @@
 package kyrylo.delivery.com.deliveryusersmicroservice.roles;
 
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.Role;
-import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.RoleAlreadyExistsException;
-import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.RoleNotFoundException;
+import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.roleExceptions.RoleAlreadyExistsException;
+import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.roleExceptions.RoleNotFoundException;
 import kyrylo.delivery.com.deliveryusersmicroservice.repositories.RoleRepository;
 import kyrylo.delivery.com.deliveryusersmicroservice.services.RoleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;

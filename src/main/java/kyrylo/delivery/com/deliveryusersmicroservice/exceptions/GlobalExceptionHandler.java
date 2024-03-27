@@ -1,5 +1,7 @@
 package kyrylo.delivery.com.deliveryusersmicroservice.exceptions;
 
+import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.roleExceptions.RoleAlreadyExistsException;
+import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.roleExceptions.RoleNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -10,7 +12,6 @@ import java.rmi.AlreadyBoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-
     @ExceptionHandler(RoleNotFoundException.class)
     public ResponseEntity<?> roleNotFoundExceptionHandler(RoleNotFoundException ex, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(HttpStatus.NOT_FOUND.value(), ex.getMessage(), request.getDescription(false));
