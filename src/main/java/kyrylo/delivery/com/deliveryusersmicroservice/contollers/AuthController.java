@@ -16,6 +16,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -34,56 +35,27 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest) {
-        User user = authService.registerUser(registerRequest);
-        if(user == null) {
-            return new ResponseEntity<>("Registration failed", HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
+    public User registerUser(@RequestBody RegisterRequest registerRequest) {
+        return authService.registerUser(registerRequest);
     }
 
     @PostMapping("/token")
-    public ResponseEntity<JwtResponse> getToken(@RequestBody AuthRequest authRequest) {
+    public JwtResponse getToken(@RequestBody AuthRequest authRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequest.username(), authRequest.password()));
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        Optional<RefreshToken> existingRefreshToken = refreshTokenService.findByUsername(authRequest.username());
-
-        RefreshToken refreshToken;
-        if (existingRefreshToken.isPresent()) {
-            refreshToken = refreshTokenService.updateRefreshToken(existingRefreshToken.get());
-        } else {
-            refreshToken = refreshTokenService.createRefreshToken(authRequest.username());
-        }
-
-        if(refreshToken == null) {
-            throw new RuntimeException("Error in processing Refresh Token");
-        }
+        refreshTokenService.findByUsername(authRequest.username())
+                .map(refreshTokenService::updateRefreshToken)
+                .orElseGet(() -> refreshTokenService.createRefreshToken(authRequest.username()));
 
         String accessToken = authService.generateToken(userDetails);
-        return ResponseEntity.ok(new JwtResponse(accessToken));
+        return new JwtResponse(accessToken);
     }
 
-
     @PostMapping("/refresh")
-    public ResponseEntity<?> refreshAccessToken(@RequestHeader("Authorization") String bearerToken) {
-        if (!bearerToken.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Incorrect Authorization header format.");
-        }
-
-        String onlyBearerToken = bearerToken.substring(7);
-        String username = authService.extractUsername(onlyBearerToken);
-
-        RefreshToken existingRefreshToken = refreshTokenService.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Refresh Token not found"));
-
-        refreshTokenService.verifyExpiration(existingRefreshToken);
-
-        UserDetails userDetails = authService.loadUserByUsername(username);
-        String newAccessToken = authService.generateToken(userDetails);
-
-        return ResponseEntity.ok(new JwtResponse(newAccessToken));
+    public JwtResponse refreshAccessToken(@RequestHeader("Authorization") String bearerToken) {
+        return authService.refreshAccessToken(bearerToken);
     }
 
     @PostMapping("/validateToken")

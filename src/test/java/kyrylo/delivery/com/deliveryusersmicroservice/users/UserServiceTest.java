@@ -3,7 +3,7 @@ package kyrylo.delivery.com.deliveryusersmicroservice.users;
 import kyrylo.delivery.com.deliveryusersmicroservice.dto.RegisterRequest;
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.Role;
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.User;
-import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.userException.UserNotFoundException;
+import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.usersException.UserNotFoundException;
 import kyrylo.delivery.com.deliveryusersmicroservice.repositories.RoleRepository;
 import kyrylo.delivery.com.deliveryusersmicroservice.repositories.UserRepository;
 import kyrylo.delivery.com.deliveryusersmicroservice.services.UserService;

@@ -3,7 +3,7 @@ package kyrylo.delivery.com.deliveryusersmicroservice.services;
 import kyrylo.delivery.com.deliveryusersmicroservice.dto.RegisterRequest;
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.User;
 import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.roleExceptions.RoleNotFoundException;
-import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.userException.UserNotFoundException;
+import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.usersException.UserNotFoundException;
 import kyrylo.delivery.com.deliveryusersmicroservice.repositories.RoleRepository;
 import kyrylo.delivery.com.deliveryusersmicroservice.repositories.UserRepository;
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.Role;
@@ -12,7 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {

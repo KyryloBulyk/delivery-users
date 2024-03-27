@@ -1,15 +1,10 @@
 package kyrylo.delivery.com.deliveryusersmicroservice.contollers;
 
 import kyrylo.delivery.com.deliveryusersmicroservice.dto.RegisterRequest;
-import kyrylo.delivery.com.deliveryusersmicroservice.entities.Role;
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.User;
-import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.userException.EmailNotFoundException;
-import kyrylo.delivery.com.deliveryusersmicroservice.filter.JwtAuthFilter;
+import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.usersException.EmailNotFoundException;
 import kyrylo.delivery.com.deliveryusersmicroservice.services.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
