@@ -1,11 +1,12 @@
 package kyrylo.delivery.com.deliveryusersmicroservice.roles;
 
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.Role;
+import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.roleExceptions.RoleAlreadyExistsException;
+import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.roleExceptions.RoleNotFoundException;
 import kyrylo.delivery.com.deliveryusersmicroservice.repositories.RoleRepository;
 import kyrylo.delivery.com.deliveryusersmicroservice.services.RoleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -48,10 +49,31 @@ public class RoleServiceTest {
         Role role = new Role(1L, "ROLE_USER");
         when(roleRepository.findById(1L)).thenReturn(Optional.of(role));
 
-        Optional<Role> foundRole = roleService.getRoleById(1L);
+        Role foundRole = roleService.getRoleById(1L);
 
-        assertTrue(foundRole.isPresent());
-        assertEquals("ROLE_USER", foundRole.get().getName());
+        assertNotNull(foundRole);
+        assertEquals("ROLE_USER", foundRole.getName());
+    }
+
+    @Test
+    void getRoleById_WhenNotFound_ThrowsRoleNotFoundException() {
+        when(roleRepository.findById(99L)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(RoleNotFoundException.class, () -> {
+            roleService.getRoleById(99L);
+        });
+
+        assertTrue(exception.getMessage().contains("was not found"));
+    }
+
+    @Test
+    void createNewRole_ThrowsRoleAlreadyExistsException_WhenRoleExists() {
+        Role newRole = new Role(null, "ROLE_EXISTING");
+        when(roleRepository.existsByName("ROLE_EXISTING")).thenReturn(true);
+
+        assertThrows(RoleAlreadyExistsException.class, () -> {
+            roleService.createNewRole(newRole);
+        });
     }
 
     @Test
@@ -68,17 +90,6 @@ public class RoleServiceTest {
     }
 
     @Test
-    void createNewRole_WhenRoleExists_ReturnsNull() {
-        Role existingRole = new Role(1L, "ROLE_EXISTING");
-        when(roleRepository.existsByName("ROLE_EXISTING")).thenReturn(true);
-
-        Role result = roleService.createNewRole(existingRole);
-
-        assertNull(result);
-        verify(roleRepository, never()).save(any(Role.class));
-    }
-
-    @Test
     void updateRole_WhenRoleExists_UpdatesRole() {
         Role existingRole = new Role(1L, "ROLE_OLD");
         Role updatedRoleInfo = new Role(1L, "ROLE_UPDATED");
@@ -89,21 +100,16 @@ public class RoleServiceTest {
 
         assertNotNull(result);
         assertEquals("ROLE_UPDATED", result.getName());
-        ArgumentCaptor<Role> roleArgumentCaptor = ArgumentCaptor.forClass(Role.class);
-        verify(roleRepository).save(roleArgumentCaptor.capture());
-        Role capturedRole = roleArgumentCaptor.getValue();
-        assertEquals("ROLE_UPDATED", capturedRole.getName());
     }
 
     @Test
-    void updateRole_WhenRoleDoesNotExist_ReturnsNull() {
+    void updateRole_WhenRoleDoesNotExist_ThrowsRoleNotFoundException() {
         Role updatedRoleInfo = new Role(99L, "ROLE_UPDATED");
         when(roleRepository.findById(99L)).thenReturn(Optional.empty());
 
-        Role result = roleService.updateRole(99L, updatedRoleInfo);
-
-        assertNull(result);
-        verify(roleRepository, never()).save(any(Role.class));
+        assertThrows(RoleNotFoundException.class, () -> {
+            roleService.updateRole(99L, updatedRoleInfo);
+        });
     }
 
     @Test
@@ -111,20 +117,18 @@ public class RoleServiceTest {
         when(roleRepository.existsById(1L)).thenReturn(true);
         doNothing().when(roleRepository).deleteById(1L);
 
-        boolean result = roleService.deleteRole(1L);
+        roleService.deleteRole(1L);
 
-        assertTrue(result);
         verify(roleRepository).deleteById(1L);
     }
 
     @Test
-    void deleteRole_WhenRoleDoesNotExist_ReturnsFalse() {
+    void deleteRole_WhenRoleDoesNotExist_ThrowsRoleNotFoundException() {
         when(roleRepository.existsById(99L)).thenReturn(false);
 
-        boolean result = roleService.deleteRole(99L);
-
-        assertFalse(result);
-        verify(roleRepository, never()).deleteById(99L);
+        assertThrows(RoleNotFoundException.class, () -> {
+            roleService.deleteRole(99L);
+        });
     }
 
 }
