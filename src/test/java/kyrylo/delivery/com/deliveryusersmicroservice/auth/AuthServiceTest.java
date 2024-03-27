@@ -1,7 +1,9 @@
 package kyrylo.delivery.com.deliveryusersmicroservice.auth;
 
+import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.authExceptions.InvalidTokenException;
 import kyrylo.delivery.com.deliveryusersmicroservice.services.AuthService;
 import kyrylo.delivery.com.deliveryusersmicroservice.services.JwtService;
+import kyrylo.delivery.com.deliveryusersmicroservice.userDetails.DeliveryUserDetails;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -32,7 +34,7 @@ class AuthServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        userDetails = new User("user", "password", Collections.emptyList());
+        userDetails = new DeliveryUserDetails("user", "password", Collections.emptyList());
     }
 
     @Test
@@ -57,15 +59,30 @@ class AuthServiceTest {
     }
 
     @Test
-    void validateToken_ValidatesUsingJwtService() throws Exception {
-        String fakeToken = "fakeToken";
-        when(jwtService.extractUsername(fakeToken)).thenReturn("user");
-        when(userDetailsService.loadUserByUsername("user")).thenReturn(userDetails);
+    void validateToken_WhenTokenIsValid_DoesNotThrowException() {
+        String validToken = "validToken";
+        when(jwtService.extractUsername(validToken)).thenReturn("user");
+        when(userDetailsService.loadUserByUsername(any())).thenReturn(userDetails);
+        when(jwtService.validateToken(validToken, userDetails)).thenReturn(true);
 
-        authService.validateToken(fakeToken);
+        assertDoesNotThrow(() -> authService.validateToken(validToken));
 
-        verify(jwtService, times(1)).validateToken(fakeToken, userDetails);
+        verify(jwtService, times(1)).validateToken(validToken, userDetails);
     }
+
+    @Test
+    void validateToken_WhenTokenIsInvalid_ThrowsInvalidTokenException() {
+        String invalidToken = "invalidToken";
+        when(jwtService.extractUsername(invalidToken)).thenReturn("user");
+        when(userDetailsService.loadUserByUsername(any())).thenReturn(userDetails);
+        when(jwtService.validateToken(invalidToken, userDetails)).thenReturn(false);
+
+        assertThrows(InvalidTokenException.class, () -> authService.validateToken(invalidToken));
+
+        verify(jwtService).validateToken(invalidToken, userDetails);
+    }
+
+
 
 
 }

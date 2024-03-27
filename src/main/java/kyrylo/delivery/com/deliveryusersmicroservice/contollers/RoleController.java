@@ -26,42 +26,24 @@ public class RoleController {
     }
 
     @GetMapping("/{roleId}")
-    public ResponseEntity<Role> getRoleById(@PathVariable Long roleId) {
-        return roleService.getRoleById(roleId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public Role getRoleById(@PathVariable Long roleId) {
+        return roleService.getRoleById(roleId);
     }
 
     @PostMapping()
     public ResponseEntity<?> createNewRole(@RequestBody Role newRole) {
-        Role role = roleService.createNewRole(newRole);
-
-        if(role == null) {
-            return new ResponseEntity<>("Creating is failed", HttpStatus.BAD_REQUEST);
-        }
-
-        return new ResponseEntity<>(role, HttpStatus.CREATED);
+        Role createdRole = roleService.createNewRole(newRole);
+        return ResponseEntity.status(201).body(createdRole);
     }
 
     @PutMapping("/{roleId}")
-    public ResponseEntity<?> updateRole(@PathVariable Long roleId, @RequestBody Role updatingRole) {
-        Role role = roleService.updateRole(roleId, updatingRole);
-
-        if(role == null) {
-            return new ResponseEntity<>("Role wasn't found", HttpStatus.NOT_FOUND);
-        }
-
-        return new ResponseEntity<>(role, HttpStatus.OK);
+    public Role updateRole(@PathVariable Long roleId, @RequestBody Role updatingRole) {
+        return roleService.updateRole(roleId, updatingRole);
     }
 
     @DeleteMapping("/{roleId}")
     public ResponseEntity<?> deleteRole(@PathVariable Long roleId) {
-        boolean deletingRole = roleService.deleteRole(roleId);
-
-        if(!deletingRole) {
-            return new ResponseEntity<>("Role wasn't found", HttpStatus.NOT_FOUND);
-        }
-
-        return new ResponseEntity<>("Role was successfully deleted", HttpStatus.OK);
+        roleService.deleteRole(roleId);
+        return ResponseEntity.ok().body("Role was successfully deleted");
     }
 }
