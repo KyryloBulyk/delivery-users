@@ -8,9 +8,6 @@ import kyrylo.delivery.com.deliveryusersmicroservice.repositories.RoleRepository
 import kyrylo.delivery.com.deliveryusersmicroservice.repositories.UserRepository;
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.Role;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,14 +22,12 @@ public class UserService {
     private RoleRepository roleRepository;
 
     private PasswordEncoder passwordEncoder;
-    private UserDetailsService userDetailsService;
 
     @Autowired
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, UserDetailsService userDetailsService) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
-        this.userDetailsService = userDetailsService;
     }
 
     public List<User> getAllUsers() {
@@ -66,28 +61,6 @@ public class UserService {
 
         userRepository.deleteById(userId);
 
-    }
-
-    public User registerUser(RegisterRequest registerRequest) {
-        if(userRepository.existsByUsername(registerRequest.username()) || userRepository.existsByEmail(registerRequest.email())) {
-            return null;
-        }
-
-        User user = new User();
-        user.setUsername(registerRequest.username());
-        user.setPassword(passwordEncoder.encode(registerRequest.password()));
-        user.setEmail(registerRequest.email());
-
-        Role role = roleRepository.findByName(registerRequest.roleName())
-                .orElseThrow(() -> new RuntimeException("Role not found."));
-
-        user.setRole(role);
-
-        return userRepository.save(user);
-    }
-
-    public UserDetails loadUserByUsername(String username) {
-        return userDetailsService.loadUserByUsername(username);
     }
 
     public boolean existsByEmail(String email) {

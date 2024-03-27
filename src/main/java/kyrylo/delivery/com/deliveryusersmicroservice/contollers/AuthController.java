@@ -23,21 +23,19 @@ import java.util.Optional;
 @RequestMapping("/api/auth")
 public class AuthController {
     private AuthService authService;
-    private UserService userService;
     private AuthenticationManager authenticationManager;
     private RefreshTokenService refreshTokenService;
 
     @Autowired
-    public AuthController(AuthService authService, AuthenticationManager authenticationManager, UserService userService, RefreshTokenService refreshTokenService) {
+    public AuthController(AuthService authService, AuthenticationManager authenticationManager, RefreshTokenService refreshTokenService) {
         this.authService = authService;
         this.authenticationManager = authenticationManager;
-        this.userService = userService;
         this.refreshTokenService = refreshTokenService;
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest) {
-        User user = userService.registerUser(registerRequest);
+        User user = authService.registerUser(registerRequest);
         if(user == null) {
             return new ResponseEntity<>("Registration failed", HttpStatus.BAD_REQUEST);
         }
@@ -82,7 +80,7 @@ public class AuthController {
 
         refreshTokenService.verifyExpiration(existingRefreshToken);
 
-        UserDetails userDetails = userService.loadUserByUsername(username);
+        UserDetails userDetails = authService.loadUserByUsername(username);
         String newAccessToken = authService.generateToken(userDetails);
 
         return ResponseEntity.ok(new JwtResponse(newAccessToken));
