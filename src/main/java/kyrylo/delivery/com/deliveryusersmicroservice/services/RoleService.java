@@ -1,6 +1,8 @@
 package kyrylo.delivery.com.deliveryusersmicroservice.services;
 
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.Role;
+import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.RoleAlreadyExistsException;
+import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.RoleNotFoundException;
 import kyrylo.delivery.com.deliveryusersmicroservice.repositories.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,32 +25,31 @@ public class RoleService {
         return roleRepository.findAll();
     }
 
-    public Optional<Role> getRoleById(Long roleId) {
-        return roleRepository.findById(roleId);
+    public Role getRoleById(Long roleId) {
+        return roleRepository.findById(roleId)
+                .orElseThrow(() -> new RoleNotFoundException(roleId));
     }
 
     public Role createNewRole(Role newRole) {
-        if(roleRepository.existsByName(newRole.getName())) return null;
+        if(roleRepository.existsByName(newRole.getName()))
+            throw new RoleAlreadyExistsException(newRole.getName());
 
         return roleRepository.save(newRole);
     }
 
     public Role updateRole(Long roleId, Role updatingRole) {
-        Optional<Role> existingRole = roleRepository.findById(roleId);
+        Role existingRole = roleRepository.findById(roleId)
+                .orElseThrow(() -> new RoleNotFoundException(roleId));
 
-        if(existingRole.isEmpty()) return null;
+        existingRole.setName(updatingRole.getName());
 
-        Role updatedRole = existingRole.get();
-        updatedRole.setName(updatingRole.getName());
-
-        return roleRepository.save(updatedRole);
+        return roleRepository.save(existingRole);
     }
 
-    public boolean deleteRole(Long roleId) {
-        if(!roleRepository.existsById(roleId)) return false;
+    public void deleteRole(Long roleId) {
+        if(!roleRepository.existsById(roleId))
+            throw new RoleNotFoundException(roleId);
 
         roleRepository.deleteById(roleId);
-
-        return true;
     }
 }
