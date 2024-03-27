@@ -1,8 +1,6 @@
 name: Delivery Continues Integration
 
 on:
-  push:
-    branches: [ '*' ]
   pull_request:
     branches: [ '*' ]
 
