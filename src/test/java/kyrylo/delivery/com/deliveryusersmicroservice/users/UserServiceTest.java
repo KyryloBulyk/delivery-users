@@ -6,6 +6,7 @@ import kyrylo.delivery.com.deliveryusersmicroservice.entities.User;
 import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.usersException.UserNotFoundException;
 import kyrylo.delivery.com.deliveryusersmicroservice.repositories.RoleRepository;
 import kyrylo.delivery.com.deliveryusersmicroservice.repositories.UserRepository;
+import kyrylo.delivery.com.deliveryusersmicroservice.services.RefreshTokenService;
 import kyrylo.delivery.com.deliveryusersmicroservice.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,9 @@ class UserServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private RefreshTokenService refreshTokenService;
 
     @InjectMocks
     private UserService userService;
@@ -101,7 +105,13 @@ class UserServiceTest {
     @Test
     void deleteUser_ExistingUser_Success() {
         Long userId = 1L;
+        User user = new User();
+        user.setUsername("username");
+        user.setEmail("username@exaple.com");
+
         when(userRepository.existsById(userId)).thenReturn(true);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        doNothing().when(refreshTokenService).deleteByUsername(any(String.class));
         doNothing().when(userRepository).deleteById(userId);
 
         assertDoesNotThrow(() -> userService.deleteUser(userId));
@@ -114,6 +124,28 @@ class UserServiceTest {
         when(userRepository.existsById(userId)).thenReturn(false);
 
         assertThrows(UserNotFoundException.class, () -> userService.deleteUser(userId));
+    }
+
+    @Test
+    void existsByEmail_EmailExists_ReturnsTrue() {
+        String email = "user1@example.com";
+        when(userRepository.existsByEmail(email)).thenReturn(true);
+
+        boolean result = userService.existsByEmail(email);
+
+        assertTrue(result);
+        verify(userRepository).existsByEmail(email);
+    }
+
+    @Test
+    void existsByEmail_EmailDoesNotExist_ReturnsFalse() {
+        String email = "nonexisting@example.com";
+        when(userRepository.existsByEmail(email)).thenReturn(false);
+
+        boolean result = userService.existsByEmail(email);
+
+        assertFalse(result);
+        verify(userRepository).existsByEmail(email);
     }
 
 }

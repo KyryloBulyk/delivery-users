@@ -6,15 +6,14 @@ import kyrylo.delivery.com.deliveryusersmicroservice.dto.JwtResponse;
 import kyrylo.delivery.com.deliveryusersmicroservice.dto.RegisterRequest;
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.User;
 import kyrylo.delivery.com.deliveryusersmicroservice.repositories.UserRepository;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -23,6 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@ActiveProfiles("test")
 public class UserControllerIntegrationTest {
 
     @Autowired
@@ -34,12 +35,10 @@ public class UserControllerIntegrationTest {
     private static boolean alreadySetup = false;
     private String jwtToken;
     private User sampleUser;
-
     private static Long userId;
-    private Logger logger = LoggerFactory.getLogger(UserControllerIntegrationTest.class);
 
     @BeforeAll
-    public static void setUpOnce(@Autowired MockMvc mockMvc, @Autowired ObjectMapper objectMapper, @Autowired UserRepository userRepository) throws Exception {
+    public static void setUpOnce(@Autowired MockMvc mockMvc, @Autowired ObjectMapper objectMapper) throws Exception {
         if (!alreadySetup) {
             RegisterRequest registerRequest = new RegisterRequest("username", "password", "useremail@example.com", "ROLE_ADMIN");
 
@@ -77,6 +76,7 @@ public class UserControllerIntegrationTest {
     }
 
     @Test
+    @Order(1)
     public void getAllUsers_ShouldReturnOk() throws Exception {
         mockMvc.perform(get("/api/users")
                         .header("Authorization", "Bearer " + this.jwtToken))
@@ -87,6 +87,7 @@ public class UserControllerIntegrationTest {
     }
 
     @Test
+    @Order(2)
     public void getUserById_ShouldReturnUser() throws Exception {
         mockMvc.perform(get("/api/users/{userId}", sampleUser.getUserId())
                         .header("Authorization", "Bearer " + this.jwtToken))
@@ -94,6 +95,48 @@ public class UserControllerIntegrationTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.username").value(sampleUser.getUsername()));
     }
+
+    @Test
+    @Order(3)
+    public void existsByEmail_EmailExists_ReturnsOk() throws Exception {
+        String existingEmail = "useremail@example.com";
+        mockMvc.perform(get("/api/users/email/{email}", existingEmail)
+                        .header("Authorization", "Bearer " + this.jwtToken))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(4)
+    public void existsByEmail_EmailDoesNotExist_ReturnsNotFound() throws Exception {
+        String nonExistingEmail = "nonexisting@example.com";
+        mockMvc.perform(get("/api/users/email/{email}", nonExistingEmail)
+                        .header("Authorization", "Bearer " + this.jwtToken))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(5)
+    public void updateUser_ShouldUpdateUser() throws Exception {
+        String updatedEmail = "updatedemail@example.com";
+        RegisterRequest updateRequest = new RegisterRequest(sampleUser.getUsername(), sampleUser.getPassword(), updatedEmail, "ROLE_USER");
+
+        mockMvc.perform(put("/api/users/{userId}", sampleUser.getUserId())
+                        .header("Authorization", "Bearer " + this.jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.email").value(updatedEmail));
+    }
+
+    @Test
+    @Order(6)
+    public void deleteUser_ShouldDeleteUser() throws Exception {
+        mockMvc.perform(delete("/api/users/{userId}", sampleUser.getUserId())
+                        .header("Authorization", "Bearer " + this.jwtToken))
+                .andExpect(status().isOk());
+    }
+
 
 }
 
