@@ -1,5 +1,6 @@
 package kyrylo.delivery.com.deliveryusersmicroservice.contollers;
 
+import jakarta.validation.Valid;
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.Role;
 import kyrylo.delivery.com.deliveryusersmicroservice.services.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,13 +32,13 @@ public class RoleController {
     }
 
     @PostMapping()
-    public ResponseEntity<?> createNewRole(@RequestBody Role newRole) {
+    public ResponseEntity<?> createNewRole(@Valid @RequestBody Role newRole) {
         Role createdRole = roleService.createNewRole(newRole);
         return ResponseEntity.status(201).body(createdRole);
     }
 
     @PutMapping("/{roleId}")
-    public Role updateRole(@PathVariable Long roleId, @RequestBody Role updatingRole) {
+    public Role updateRole(@PathVariable Long roleId, @Valid @RequestBody Role updatingRole) {
         return roleService.updateRole(roleId, updatingRole);
     }
 
