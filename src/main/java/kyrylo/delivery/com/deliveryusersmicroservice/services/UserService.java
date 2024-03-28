@@ -1,6 +1,7 @@
 package kyrylo.delivery.com.deliveryusersmicroservice.services;
 
 import kyrylo.delivery.com.deliveryusersmicroservice.dto.RegisterRequest;
+import kyrylo.delivery.com.deliveryusersmicroservice.entities.RefreshToken;
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.User;
 import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.roleExceptions.RoleNotFoundException;
 import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.usersException.UserNotFoundException;
@@ -21,12 +22,15 @@ public class UserService {
     private RoleRepository roleRepository;
 
     private PasswordEncoder passwordEncoder;
+    private RefreshTokenService refreshTokenService;
 
     @Autowired
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository,
+                       PasswordEncoder passwordEncoder, RefreshTokenService refreshTokenService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.refreshTokenService = refreshTokenService;
     }
 
     public List<User> getAllUsers() {
@@ -58,8 +62,8 @@ public class UserService {
         if(!userRepository.existsById(userId))
             throw new UserNotFoundException(userId);
 
+        refreshTokenService.deleteByUsername(getUserById(userId).getUsername());
         userRepository.deleteById(userId);
-
     }
 
     public boolean existsByEmail(String email) {
