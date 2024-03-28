@@ -1,5 +1,6 @@
 package kyrylo.delivery.com.deliveryusersmicroservice.contollers;
 
+import jakarta.validation.Valid;
 import kyrylo.delivery.com.deliveryusersmicroservice.dto.AuthRequest;
 import kyrylo.delivery.com.deliveryusersmicroservice.dto.JwtResponse;
 import kyrylo.delivery.com.deliveryusersmicroservice.dto.RegisterRequest;
@@ -36,7 +37,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public User registerUser(@RequestBody RegisterRequest registerRequest) {
+    public User registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
         return authService.registerUser(registerRequest);
     }
 

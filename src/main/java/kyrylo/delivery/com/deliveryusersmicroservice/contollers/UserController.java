@@ -1,5 +1,6 @@
 package kyrylo.delivery.com.deliveryusersmicroservice.contollers;
 
+import jakarta.validation.Valid;
 import kyrylo.delivery.com.deliveryusersmicroservice.dto.RegisterRequest;
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.User;
 import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.usersException.EmailNotFoundException;
@@ -32,7 +33,7 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    public User updateUser(@PathVariable Long userId, @RequestBody RegisterRequest registerRequest) {
+    public User updateUser(@PathVariable Long userId, @Valid @RequestBody RegisterRequest registerRequest) {
         return userService.updateUser(userId, registerRequest);
     }
 
