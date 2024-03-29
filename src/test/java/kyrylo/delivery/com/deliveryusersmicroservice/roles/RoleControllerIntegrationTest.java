@@ -33,7 +33,7 @@ public class RoleControllerIntegrationTest {
 
     @BeforeAll
     public static void setUpOnce(@Autowired MockMvc mockMvc, @Autowired ObjectMapper objectMapper) throws Exception {
-        RegisterRequest registerRequest = new RegisterRequest("username2", "password123", "useremail@example.com", "ROLE_ADMIN");
+        RegisterRequest registerRequest = new RegisterRequest("username2", "password123", "useremail2@example.com", "ROLE_ADMIN");
 
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
