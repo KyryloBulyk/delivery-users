@@ -5,6 +5,7 @@ import kyrylo.delivery.com.deliveryusersmicroservice.entities.RefreshToken;
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.User;
 import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.roleExceptions.RoleNotFoundException;
 import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.usersException.UserNotFoundException;
+import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.usersException.UsernameAlreadyExistsException;
 import kyrylo.delivery.com.deliveryusersmicroservice.repositories.RoleRepository;
 import kyrylo.delivery.com.deliveryusersmicroservice.repositories.UserRepository;
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.Role;
@@ -46,7 +47,16 @@ public class UserService {
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
 
-        existingUser.setUsername(updatedUser.username());
+        if (!existingUser.getUsername().equals(updatedUser.username()) &&
+                userRepository.existsByUsernameAndUserIdNot(updatedUser.username(), userId)) {
+            throw new UsernameAlreadyExistsException(updatedUser.username());
+        }
+
+        if (!existingUser.getUsername().equals(updatedUser.username())) {
+            refreshTokenService.deleteByUsername(existingUser.getUsername());
+            existingUser.setUsername(updatedUser.username());
+        }
+
         existingUser.setPassword(passwordEncoder.encode(updatedUser.password()));
         existingUser.setEmail(updatedUser.email());
 
