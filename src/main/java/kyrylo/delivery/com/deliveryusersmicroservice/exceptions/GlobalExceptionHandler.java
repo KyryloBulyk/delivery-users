@@ -6,6 +6,7 @@ import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.roleExceptions.R
 import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.roleExceptions.RoleNotFoundException;
 import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.usersException.EmailNotFoundException;
 import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.usersException.UserNotFoundException;
+import kyrylo.delivery.com.deliveryusersmicroservice.exceptions.usersException.UsernameAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -36,6 +37,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> userNotFoundExceptionHandler(UserNotFoundException ex, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(HttpStatus.NOT_FOUND.value(), ex.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    public ResponseEntity<?> userAlreadyExistsExceptionHandler(UsernameAlreadyExistsException ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(HttpStatus.CONFLICT.value(), ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(EmailNotFoundException.class)
