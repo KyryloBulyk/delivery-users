@@ -34,7 +34,7 @@ public class RoleControllerIntegrationTest {
 
     @BeforeAll
     public static void setUpOnce(@Autowired MockMvc mockMvc, @Autowired ObjectMapper objectMapper) throws Exception {
-        RegisterRequest registerRequest = new RegisterRequest("username", "password", "useremail@example.com", "ROLE_ADMIN");
+        RegisterRequest registerRequest = new RegisterRequest("username", "password123", "useremail@example.com", "ROLE_ADMIN");
 
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -45,7 +45,7 @@ public class RoleControllerIntegrationTest {
 
     @BeforeEach
     void loginBeforeEachTest(@Autowired MockMvc mockMvc, @Autowired ObjectMapper objectMapper) throws Exception  {
-        AuthRequest authRequest = new AuthRequest("username", "password");
+        AuthRequest authRequest = new AuthRequest("username", "password123");
         MvcResult result = mockMvc.perform(post("/api/auth/token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(authRequest)))
