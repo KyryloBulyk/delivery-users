@@ -1,6 +1,7 @@
 package kyrylo.delivery.com.deliveryusersmicroservice.roles;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import kyrylo.delivery.com.deliveryusersmicroservice.dto.AuthRequest;
 import kyrylo.delivery.com.deliveryusersmicroservice.dto.JwtResponse;
 import kyrylo.delivery.com.deliveryusersmicroservice.dto.RegisterRequest;
@@ -21,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ActiveProfiles("test")
+@Transactional
 public class RoleControllerIntegrationTest {
 
     @Autowired
@@ -31,20 +33,18 @@ public class RoleControllerIntegrationTest {
 
     private String jwtToken;
 
-    @BeforeAll
-    public static void setUpOnce(@Autowired MockMvc mockMvc, @Autowired ObjectMapper objectMapper) throws Exception {
-        RegisterRequest registerRequest = new RegisterRequest("username2", "password123", "useremail2@example.com", "ROLE_ADMIN");
+    @BeforeEach
+    void loginBeforeEachTest(@Autowired MockMvc mockMvc, @Autowired ObjectMapper objectMapper) throws Exception {
+        RegisterRequest registerRequest = new RegisterRequest("username", "password123", "useremail@example.com", "ROLE_ADMIN");
 
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isOk())
                 .andReturn();
-    }
 
-    @BeforeEach
-    void loginBeforeEachTest(@Autowired MockMvc mockMvc, @Autowired ObjectMapper objectMapper) throws Exception  {
-        AuthRequest authRequest = new AuthRequest("username2", "password123");
+
+        AuthRequest authRequest = new AuthRequest("username", "password123");
         MvcResult result = mockMvc.perform(post("/api/auth/token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(authRequest)))
@@ -106,7 +106,7 @@ public class RoleControllerIntegrationTest {
     @Test
     @Order(5)
     void deleteRole_ShouldDeleteRole() throws Exception {
-        mockMvc.perform(delete("/api/roles/5")
+        mockMvc.perform(delete("/api/roles/1")
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk());
     }
