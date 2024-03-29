@@ -28,10 +28,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfiguration {
 
     private JwtAuthFilter authFilter;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
     @Autowired
-    public SecurityConfiguration(JwtAuthFilter authFilter) {
+    public SecurityConfiguration(JwtAuthFilter authFilter, CustomAuthenticationEntryPoint authenticationEntryPoint, CustomAccessDeniedHandler accessDeniedHandler) {
         this.authFilter = authFilter;
+        this.authenticationEntryPoint = authenticationEntryPoint;
+        this.accessDeniedHandler = accessDeniedHandler;
     }
 
     @Bean
@@ -39,6 +43,9 @@ public class SecurityConfiguration {
         return httpSecurity
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
+                .exceptionHandling(Customizer.withDefaults())
+                .exceptionHandling((exception) -> exception.authenticationEntryPoint(authenticationEntryPoint)
+                                                                .accessDeniedHandler(accessDeniedHandler))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
                                 "/api/auth/**",
