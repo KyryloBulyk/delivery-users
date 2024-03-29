@@ -1,14 +1,12 @@
 package kyrylo.delivery.com.deliveryusersmicroservice.users;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import kyrylo.delivery.com.deliveryusersmicroservice.dto.AuthRequest;
 import kyrylo.delivery.com.deliveryusersmicroservice.dto.JwtResponse;
 import kyrylo.delivery.com.deliveryusersmicroservice.dto.RegisterRequest;
 import kyrylo.delivery.com.deliveryusersmicroservice.entities.User;
-import kyrylo.delivery.com.deliveryusersmicroservice.repositories.UserRepository;
 import org.junit.jupiter.api.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ActiveProfiles("test")
+@Transactional
 public class UserControllerIntegrationTest {
 
     @Autowired
@@ -32,32 +31,24 @@ public class UserControllerIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private static boolean alreadySetup = false;
     private String jwtToken;
     private User sampleUser;
     private static Long userId;
 
-    @BeforeAll
-    public static void setUpOnce(@Autowired MockMvc mockMvc, @Autowired ObjectMapper objectMapper) throws Exception {
-        if (!alreadySetup) {
-            RegisterRequest registerRequest = new RegisterRequest("username", "password", "useremail@example.com", "ROLE_ADMIN");
-
-            MvcResult registerResult = mockMvc.perform(post("/api/auth/register")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(registerRequest)))
-                    .andExpect(status().isOk())
-                    .andReturn();
-
-            User registeredUser = objectMapper.readValue(registerResult.getResponse().getContentAsString(), User.class);
-            userId = registeredUser.getUserId();
-
-            alreadySetup = true;
-        }
-    }
-
     @BeforeEach
-    void loginBeforeEachTest(@Autowired MockMvc mockMvc, @Autowired ObjectMapper objectMapper, @Autowired UserRepository userRepository) throws Exception {
-        AuthRequest authRequest = new AuthRequest("username", "password");
+    void loginBeforeEachTest(@Autowired MockMvc mockMvc, @Autowired ObjectMapper objectMapper) throws Exception {
+        RegisterRequest registerRequest = new RegisterRequest("username", "password123", "useremail@example.com", "ROLE_ADMIN");
+
+        MvcResult registerResult = mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        User registeredUser = objectMapper.readValue(registerResult.getResponse().getContentAsString(), User.class);
+        userId = registeredUser.getUserId();
+
+        AuthRequest authRequest = new AuthRequest("username", "password123");
         MvcResult result = mockMvc.perform(post("/api/auth/token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(authRequest)))
@@ -72,7 +63,7 @@ public class UserControllerIntegrationTest {
         sampleUser.setUserId(userId);
         sampleUser.setUsername("username");
         sampleUser.setEmail("useremail@example.com");
-        sampleUser.setPassword("password");
+        sampleUser.setPassword("password123");
     }
 
     @Test
