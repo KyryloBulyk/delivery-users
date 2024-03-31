@@ -14,6 +14,8 @@ As a core element of the Delivery microservices architecture, the Users Microser
 
 - [Delivery Discovery](https://github.com/KyryloBulyk/delivery-discovery) 🔍: Enables efficient service discovery, allowing the Users Microservice to communicate and interact with other microservices within the ecosystem.
 
+- [Delivery Product Microservice](https://github.com/KyryloBulyk/delivery-product-microservice) 📦: Manages product catalog and order processing, handling product information, categories, and user orders, integrating seamlessly with the rest of the Delivery application ecosystem.
+
 This collaborative environment ensures that user-related functionalities are handled efficiently, contributing to the robustness of the Delivery application.
 
 ## 🚀 Features
