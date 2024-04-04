@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>kyrylo.delivery.com</groupId>
 	<artifactId>delivery-users-microservice</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2</version>
 	<name>delivery-users-microservice</name>
 	<description>Delivery User Microservice</description>
 	<properties>
