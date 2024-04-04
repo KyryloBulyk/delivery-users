@@ -48,6 +48,14 @@ public class UserController {
         }
     }
 
+    @GetMapping("/exists/{userId}")
+    public ResponseEntity<Boolean> existsById(@PathVariable Long userId) {
+        logger.info("Checking if user exists with ID: {}", userId);
+        boolean exists = userService.existsById(userId);
+        logger.info("User exists with ID {}: {}", userId, exists);
+        return ResponseEntity.ok(exists);
+    }
+
     @PutMapping("/{userId}")
     public User updateUser(@PathVariable Long userId, @Valid @RequestBody RegisterRequest registerRequest) {
         logger.info("Request to update user with ID: {}", userId);

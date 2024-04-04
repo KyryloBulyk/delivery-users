@@ -102,4 +102,11 @@ public class UserService {
         logger.info("Email {} exists: {}", email, exists);
         return exists;
     }
+
+    public boolean existsById(Long userId) {
+        logger.info("Checking if user exists with ID: {}", userId);
+        boolean exists = userRepository.existsById(userId);
+        logger.info("User with ID {} exists: {}", userId, exists);
+        return exists;
+    }
 }
